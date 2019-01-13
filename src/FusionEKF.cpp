@@ -45,8 +45,8 @@ FusionEKF::FusionEKF() {
    */
 
   // set the acceleration noise components
-  noise_ax = 5;
-  noise_ay = 5;
+  noise_ax = 9;
+  noise_ay = 9;
 
 }
 
@@ -73,10 +73,11 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 	  ekf_.x_ = VectorXd(4);
 
 	 // state covariance matrix P
-	  ekf_.P_ << 1, 0, 0, 0,
-		  0, 1, 0, 0,
-		  0, 0, 1000, 0,
-		  0, 0, 0, 1000;
+
+	  ekf_.P_ << 0.00706985, 0.00226997,  0.0184169, 0.00695398,
+		  0.00226997, 0.00511771, 0.00826626,  0.0114158,
+		  0.0184169, 0.00826626,   0.120551,  0.0371732,
+		  0.00695398,  0.0114158,  0.0371732,  0.0888411;
 
 	  // the initial transition matrix F_
 	  ekf_.F_ << 1, 0, 1, 0,
@@ -92,7 +93,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // first measurement
     cout << "EKF: " << endl;
-    ekf_.x_ << 1, 1, 1, 1;
+    ekf_.x_ << 0.6, 0.6, 5.2, 0;
 
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
@@ -102,6 +103,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 			
 		ekf_.x_ = tools.polar_to_cartesian(measurement_pack.raw_measurements_);
 		// first measurement
+		// cout << ekf_.x_;
 
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
@@ -110,12 +112,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 		// set the state with the initial location and zero velocity
 		ekf_.x_ << measurement_pack.raw_measurements_[0],
 			measurement_pack.raw_measurements_[1],
-			0,
+			5.1,
 			0;
 
 	}
 
-	ekf_.Predict();
+	// ekf_.Predict();
 
     // done initializing, no need to predict or update
     is_initialized_ = true;
@@ -139,14 +141,14 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    // 1. Modify the F matrix so that the time is integrated
    // Modified F to include time 
 
-  noise_ax = 5;
-  noise_ay = 5;
+  noise_ax = 9;
+  noise_ay = 9;
 
 
   float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
   if (dt > 10) {
-	  dt = 0;
+	  dt = 0.05;
   }
   ekf_.F_ << 1, 0, dt, 0,
 	  0, 1, 0, dt,
