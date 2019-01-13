@@ -10,6 +10,7 @@ using Eigen::VectorXd;
 using std::string;
 using std::vector;
 
+
 // for convenience
 using json = nlohmann::json;
 
@@ -86,6 +87,17 @@ int main() {
             iss >> ro;
             iss >> theta;
             iss >> ro_dot;
+
+			// check if theta is whitin acceptable range
+			const float PI = 3.1415926;
+			if ((theta > 2*PI ) || (theta < 0)) {
+				std::cout << "phi outsied the ange " << std::endl;
+				std::cout << "old measurment: " << theta << std::endl;
+				theta = tools.ConstrainAngle(theta);
+				std::cout << "fixed measurment: " << theta << std::endl;
+			}
+			
+
             meas_package.raw_measurements_ << ro,theta, ro_dot;
             iss >> timestamp;
             meas_package.timestamp_ = timestamp;
@@ -135,7 +147,7 @@ int main() {
           msgJson["rmse_x"] =  RMSE(0);
           msgJson["rmse_y"] =  RMSE(1);
           msgJson["rmse_vx"] = RMSE(2);
-          msgJson["rmse_vy"] = RMSE(3);
+          msgJson["rmse_vy"] = RMSE(3);			  
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);

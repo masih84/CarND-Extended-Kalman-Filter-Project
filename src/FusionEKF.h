@@ -4,10 +4,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <math.h>       /* sin */
 #include "Eigen/Dense"
 #include "kalman_filter.h"
 #include "measurement_package.h"
 #include "tools.h"
+
 
 class FusionEKF {
  public:
@@ -25,6 +27,7 @@ class FusionEKF {
    * Run the whole flow of the Kalman Filter from here.
    */
   void ProcessMeasurement(const MeasurementPackage &measurement_pack);
+
 
   /**
    * Kalman Filter update and prediction math lives in here.
@@ -44,6 +47,10 @@ class FusionEKF {
   Eigen::MatrixXd R_radar_;
   Eigen::MatrixXd H_laser_;
   Eigen::MatrixXd Hj_;
+
+  //acceleration noise components
+  float noise_ax;
+  float noise_ay;
 };
 
 #endif // FusionEKF_H_

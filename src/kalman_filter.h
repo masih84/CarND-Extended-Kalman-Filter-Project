@@ -2,6 +2,10 @@
 #define KALMAN_FILTER_H_
 
 #include "Eigen/Dense"
+#include <math.h>       /* sin */
+#include <iostream>
+#include "tools.h"
+
 
 class KalmanFilter {
  public:
@@ -46,6 +50,8 @@ class KalmanFilter {
    */
   void UpdateEKF(const Eigen::VectorXd &z);
 
+
+
   // state vector
   Eigen::VectorXd x_;
 
@@ -63,6 +69,11 @@ class KalmanFilter {
 
   // measurement covariance matrix
   Eigen::MatrixXd R_;
+
+private:
+	Tools tools;
+
+
 };
 
 #endif // KALMAN_FILTER_H_
